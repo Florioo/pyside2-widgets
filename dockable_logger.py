@@ -7,16 +7,16 @@ import logging
 from functools import cached_property
 
 class QDockableLoggingWidget(QDockWidget):
-    def __init__(self,parent=None):
+    def __init__(self,parent=None,font=None):
         super().__init__("Python Log",parent,objectName="python_logger")
-        logger_font = QFont()
-        logger_font.setFamily(u"Consolas")
-        logger_font.setPointSize(10)
+        
 
 
         # Configure the text edit
         self.text_edit = QTextEdit()
-        self.text_edit.setFont(logger_font)
+        if font is not None:
+            self.text_edit.setFont(font)
+            
         self.text_edit.setAutoFillBackground(False)
         self.text_edit.setStyleSheet(u"QTextEdit {background-color:rgb(30, 30, 30);\ncolor: white }")
         self.text_edit.setReadOnly(True)
