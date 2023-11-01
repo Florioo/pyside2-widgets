@@ -7,9 +7,18 @@ from typing import Dict
 
 from PySide2.QtCore import QObject, QSettings, Signal
 from PySide2.QtGui import QColor
-from PySide2.QtWidgets import (QAction, QCheckBox, QDockWidget, QFileDialog,
-                               QFormLayout, QLineEdit, QSpinBox, QStyle,
-                               QTextEdit, QWidget)
+from PySide2.QtWidgets import (
+    QAction,
+    QCheckBox,
+    QDockWidget,
+    QFileDialog,
+    QFormLayout,
+    QLineEdit,
+    QSpinBox,
+    QStyle,
+    QTextEdit,
+    QWidget,
+)
 
 
 class QDockableLoggingWidget(QDockWidget):
