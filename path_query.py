@@ -1,15 +1,14 @@
-from PySide2.QtWidgets import  QWidget, QFileDialog
-from PySide2.QtCore import QSettings
 import os
 from enum import Enum
 
+from PySide2.QtCore import QSettings
+from PySide2.QtWidgets import QFileDialog, QWidget
 
-class PathQuery():
-    
+
+class PathQuery:
     class LoadSaveEnum(Enum):
         LOAD = 1
         SAVE = 2
-
 
     def __init__(self, parent: QWidget, settings: QSettings, save_name: str, supported_types: str):
         self._parent = parent
