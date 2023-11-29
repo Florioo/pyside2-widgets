@@ -23,7 +23,7 @@ from PySide2.QtWidgets import (
 
 class QDockableLoggingWidget(QDockWidget):
     def __init__(self, settings: QSettings, font=None):
-        super().__init__(parent=None, objectName="python_logger")
+        super().__init__(parent=None, objectName="python_logger") # type: ignore
         # Set title
         self.setWindowTitle("Python Logger")
 
