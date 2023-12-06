@@ -3,9 +3,8 @@ import os
 import time
 from functools import cached_property
 from logging.handlers import RotatingFileHandler
-from typing import Dict
 
-from PySide2.QtCore import QObject, QSettings, Signal
+from PySide2.QtCore import QObject, Signal
 from PySide2.QtGui import QColor
 from PySide2.QtWidgets import (
     QAction,
@@ -19,16 +18,17 @@ from PySide2.QtWidgets import (
     QTextEdit,
     QWidget,
 )
+from pydantic import BaseModel
+from qt_settings import QGenericSettingsWidget
 
 
 class QDockableLoggingWidget(QDockWidget):
-    def __init__(self, settings: QSettings, font=None):
-        super().__init__(parent=None, objectName="python_logger") # type: ignore
+    def __init__(self, parameters: "QLogConfigWidget", font=None):
+        super().__init__(parent=None, objectName="python_logger")  # type: ignore
         # Set title
         self.setWindowTitle("Python Logger")
 
-        self.parameters = ConfigWidget(settings)
-        self.parameters.load()
+        self.parameters = parameters.data
 
         # Configure the text edit
         self.text_edit = QTextEdit()
@@ -119,19 +119,14 @@ class LogHandler(logging.Handler, QObject):
         self.bridge.log.emit(msg)
 
 
-class ConfigWidget(QWidget):
-    STORAGE_NAME = "dockable_logger_config"
+class QLogConfigWidget(QGenericSettingsWidget):
+    class Model(BaseModel):
+        max_log_lines: int = 1000
+        log_path: str = os.path.expanduser("~/Desktop/")
+        enable_file_logging: bool = False
 
-    DEFAULT_MAX_LOG_LINES = 1000
-    DEFAULT_LOG_PATH = os.path.expanduser("~/Desktop/")
-    DEFAULT_ENABLE_FILE_LOGGING = False
-
-    changed = Signal()
-
-    def __init__(self, settings: QSettings) -> None:
+    def __init__(self) -> None:
         super().__init__()
-
-        self.settings = settings
 
         # Create the inputs
         self.max_log_lines_input = QSpinBox()
@@ -149,57 +144,37 @@ class ConfigWidget(QWidget):
 
         # Set the layout
         self._layout = QFormLayout()
+
+        # Add message to restart to apply changes
+        self._layout.addRow("Restart to apply changes", QWidget())
         self._layout.addRow("Max Lines to show", self.max_log_lines_input)
         self._layout.addWidget(self.enable_file_logging_input)
         self._layout.addRow("Log Path", self.log_path_input)
         self.setLayout(self._layout)
 
         # Save the settings when the inputs change
-        self.max_log_lines_input.valueChanged.connect(self.save)
-        self.log_path_input.textChanged.connect(self.save)
-        self.enable_file_logging_input.stateChanged.connect(self.save)
-
-        # Load the settings at startup
-        self.load()
-
-    @property
-    def max_log_lines(self) -> int:
-        return self.max_log_lines_input.value()
-
-    @property
-    def log_path(self) -> str:
-        return self.log_path_input.text()
-
-    @property
-    def enable_file_logging(self) -> bool:
-        return self.enable_file_logging_input.isChecked()
+        self.max_log_lines_input.valueChanged.connect(self._on_value_changed)
+        self.log_path_input.textChanged.connect(self._on_value_changed)
+        self.enable_file_logging_input.stateChanged.connect(self._on_value_changed)
 
     def query_folder(self):
-        path = QFileDialog.getExistingDirectory(self, "Select Directory", self.log_path)
+        path = QFileDialog.getExistingDirectory(self, "Select Directory", self.log_path_input.text())
 
         if path is None or path == "":
             return
 
         self.log_path_input.setText(path)
-        self.save()
 
-    def to_dict(self):
-        return {
-            "max_log_lines": self.max_log_lines,
-            "log_path": self.log_path,
-            "enable_file_logging": self.enable_file_logging,
-        }
+    @property
+    def data(self) -> Model:
+        return self.Model(
+            max_log_lines=self.max_log_lines_input.value(),
+            log_path=self.log_path_input.text(),
+            enable_file_logging=self.enable_file_logging_input.isChecked(),
+        )
 
-    def from_dict(self, config: Dict):
-        self.max_log_lines_input.setValue(config.get("max_log_lines", self.DEFAULT_MAX_LOG_LINES))
-        self.log_path_input.setText(config.get("log_path", self.DEFAULT_LOG_PATH))
-        self.enable_file_logging_input.setChecked(config.get("enable_file_logging", self.DEFAULT_ENABLE_FILE_LOGGING))
-
-    def save(self):
-        self.settings.setValue(self.STORAGE_NAME, self.to_dict())
-        self.changed.emit()
-
-    def load(self):
-        config = self.settings.value(self.STORAGE_NAME, {})
-        assert isinstance(config, dict)
-        self.from_dict(config)
+    @data.setter
+    def data(self, data: Model):
+        self.max_log_lines_input.setValue(data.max_log_lines)
+        self.log_path_input.setText(data.log_path)
+        self.enable_file_logging_input.setChecked(data.enable_file_logging)

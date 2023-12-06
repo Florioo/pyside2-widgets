@@ -1,3 +1,3 @@
-from .dockable_logger import QDockableLoggingWidget
+from .dockable_logger import QDockableLoggingWidget, QLogConfigWidget
 
-__all__ = ["QDockableLoggingWidget"]
+__all__ = ["QDockableLoggingWidget", "QLogConfigWidget"]
