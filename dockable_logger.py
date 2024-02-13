@@ -4,10 +4,12 @@ import time
 from functools import cached_property
 from logging.handlers import RotatingFileHandler
 
-from PySide2.QtCore import QObject, Signal
-from PySide2.QtGui import QColor
-from PySide2.QtWidgets import (
-    QAction,
+from pydantic import BaseModel
+from qt_settings import QGenericSettingsWidget
+from qtpy.QtCore import QObject, Signal
+from qtpy.QtGui import QColor, QAction
+from qtpy.QtWidgets import (
+    
     QCheckBox,
     QDockWidget,
     QFileDialog,
@@ -18,8 +20,6 @@ from PySide2.QtWidgets import (
     QTextEdit,
     QWidget,
 )
-from pydantic import BaseModel
-from qt_settings import QGenericSettingsWidget
 
 
 class QDockableLoggingWidget(QDockWidget):
@@ -139,8 +139,8 @@ class QLogConfigWidget(QGenericSettingsWidget):
         self.log_path_input = QLineEdit()
         select_folder_action = QAction(self)
         select_folder_action.triggered.connect(self.query_folder)
-        select_folder_action.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
-        self.log_path_input.addAction(select_folder_action, QLineEdit.TrailingPosition)
+        select_folder_action.setIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_DirOpenIcon))
+        self.log_path_input.addAction(select_folder_action, QLineEdit.ActionPosition.TrailingPosition)
 
         # Set the layout
         self._layout = QFormLayout()
