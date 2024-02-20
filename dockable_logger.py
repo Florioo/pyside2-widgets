@@ -9,7 +9,6 @@ from qt_settings import QGenericSettingsWidget
 from qtpy.QtCore import QObject, Signal
 from qtpy.QtGui import QColor, QAction
 from qtpy.QtWidgets import (
-    
     QCheckBox,
     QDockWidget,
     QFileDialog,
