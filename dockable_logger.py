@@ -129,7 +129,8 @@ class QLogConfigWidget(QGenericSettingsWidget):
 
         # Create the inputs
         self.max_log_lines_input = QSpinBox()
-        self.max_log_lines_input.setMinimum(1)
+        self.max_log_lines_input.setValue(1000)
+        self.max_log_lines_input.setMinimum(100)
         self.max_log_lines_input.setMaximum(10000)
 
         # Enable logging to file
