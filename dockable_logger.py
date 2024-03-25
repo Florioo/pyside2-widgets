@@ -7,7 +7,7 @@ from logging.handlers import RotatingFileHandler
 from pydantic import BaseModel
 from qt_settings import QGenericSettingsWidget
 from qtpy.QtCore import QObject, Signal
-from qtpy.QtGui import QColor, QAction
+from qtpy.QtGui import QAction, QColor
 from qtpy.QtWidgets import (
     QCheckBox,
     QDockWidget,
